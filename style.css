@@ -2,28 +2,32 @@
    Colors — tweak these to shift the whole palette.
    ============================================================ */
 :root {
-  --soil:   #1f1b16;  /* background */
-  --root:   #3d352b;  /* dark layer */
-  --bone:   #e9e1d0;  /* main text */
-  --clay:   #c8643b;  /* accent 1 (glitch red) */
-  --moss:   #8a9a5b;  /* accent 2 (glitch green) */
-  --ochre:  #d4a24c;  /* accent 3 */
-  --lichen: #6f8f8a;  /* accent 4 */
+  --night:     #1c1410;  /* background — desert at night */
+  --shadow:    #3a2a20;  /* dark layer */
+  --sand:      #e8c995;  /* main text */
+  --sandstone: #d9a066;  /* accent */
+  --terracotta:#d0582f;  /* glitch red */
+  --magenta:   #c94f9b;  /* psychedelic pop */
+  --turquoise: #40c9b5;  /* glitch cyan */
+  --dune:      #8b5a3c;  /* muted brown */
 
-  --serif: "Fraunces", Georgia, serif;
-  --mono:  "Space Mono", ui-monospace, monospace;
+  --display: "Tilt Warp", "Trebuchet MS", sans-serif;
+  --mono:    "Syne Mono", ui-monospace, monospace;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 html, body { height: 100%; }
 body {
   margin: 0;
-  background: var(--soil);
-  color: var(--bone);
-  font-family: var(--serif);
+  background:
+    radial-gradient(ellipse at 50% 120%, rgba(201,79,155,.18), transparent 60%),
+    radial-gradient(ellipse at 50% -20%, rgba(64,201,181,.12), transparent 55%),
+    var(--night);
+  color: var(--sand);
+  font-family: var(--display);
   overflow: hidden;
 }
-::selection { background: var(--clay); color: var(--soil); }
+::selection { background: var(--magenta); color: var(--night); }
 
 main {
   min-height: 100%;
@@ -35,23 +39,37 @@ main {
 
 h1 {
   font-size: clamp(52px, 13vw, 190px);
-  font-weight: 800;
-  line-height: .9;
-  letter-spacing: -.03em;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -.01em;
   margin: 0;
+  /* flowing psychedelic fill */
+  background: linear-gradient(100deg, var(--sand), var(--sandstone), var(--terracotta), var(--magenta), var(--turquoise), var(--sand));
+  background-size: 300% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: flow 9s linear infinite, warp 7s ease-in-out infinite alternate;
+}
+@keyframes flow { to { background-position: 300% 0; } }
+/* Tilt Warp's rotation axes — makes the letters slowly bend */
+@keyframes warp {
+  0%   { font-variation-settings: "XROT" -30, "YROT" -20; }
+  50%  { font-variation-settings: "XROT" 25,  "YROT" 30; }
+  100% { font-variation-settings: "XROT" -10, "YROT" 40; }
 }
 
 .play {
   font-family: var(--mono);
   font-size: clamp(16px, 2.2vw, 22px);
-  color: var(--ochre);
+  color: var(--turquoise);
   text-decoration: none;
-  border: 1px solid var(--root);
+  border: 1px solid var(--shadow);
+  border-radius: 999px;
   padding: 12px 28px;
   letter-spacing: .15em;
   transition: border-color .2s, color .2s;
 }
-.play:hover, .play:focus-visible { border-color: var(--ochre); color: var(--bone); outline: none; }
+.play:hover, .play:focus-visible { border-color: var(--magenta); color: var(--sand); box-shadow: 0 0 24px rgba(201,79,155,.35); outline: none; }
 
 /* ---------- texture overlays ---------- */
 .grain {
@@ -76,11 +94,11 @@ h1 {
 /* earth layers along the bottom of the screen */
 .strata { position: fixed; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; }
 .strata span { display: block; height: 6px; }
-.strata span:nth-child(1) { background: var(--moss);   width: 72%; }
-.strata span:nth-child(2) { background: var(--ochre);  width: 54%; margin-left: 12%; }
-.strata span:nth-child(3) { background: var(--clay);   width: 86%; margin-left: 4%; }
-.strata span:nth-child(4) { background: var(--lichen); width: 40%; margin-left: 30%; }
-.strata span:nth-child(5) { background: var(--root);   width: 100%; height: 14px; }
+.strata span:nth-child(1) { background: var(--sandstone);  width: 72%; }
+.strata span:nth-child(2) { background: var(--turquoise);  width: 54%; margin-left: 12%; }
+.strata span:nth-child(3) { background: var(--terracotta); width: 86%; margin-left: 4%; }
+.strata span:nth-child(4) { background: var(--magenta);    width: 40%; margin-left: 30%; }
+.strata span:nth-child(5) { background: var(--dune);       width: 100%; height: 14px; }
 
 /* ---------- the glitch ---------- */
 .glitch { position: relative; display: inline-block; }
@@ -89,8 +107,8 @@ h1 {
   position: absolute; inset: 0;
   pointer-events: none;
 }
-.glitch::before { color: var(--clay); mix-blend-mode: screen; animation: glitch-a 3.2s infinite steps(1); }
-.glitch::after  { color: var(--moss); mix-blend-mode: screen; animation: glitch-b 2.7s infinite steps(1); }
+.glitch::before { -webkit-text-fill-color: var(--terracotta); color: var(--terracotta); mix-blend-mode: screen; animation: glitch-a 3.2s infinite steps(1); }
+.glitch::after  { -webkit-text-fill-color: var(--turquoise); color: var(--turquoise); mix-blend-mode: screen; animation: glitch-b 2.7s infinite steps(1); }
 @keyframes glitch-a {
   0%, 86%, 100% { clip-path: inset(0 0 100% 0); transform: none; }
   87% { clip-path: inset(12% 0 60% 0); transform: translate(-6px, -2px); }
@@ -105,7 +123,7 @@ h1 {
   87% { clip-path: inset(40% 0 35% 0); transform: translate(4px, 0); }
 }
 /* JS adds this class for occasional big hits */
-.glitch.burst { animation: burst .28s steps(2) 1; }
+.glitch.burst { animation: flow 9s linear infinite, warp 7s ease-in-out infinite alternate, burst .28s steps(2) 1; }
 @keyframes burst {
   0%   { transform: translate(0); filter: none; }
   25%  { transform: translate(-4px, 2px) skewX(-8deg); filter: hue-rotate(40deg); }
@@ -114,7 +132,7 @@ h1 {
   100% { transform: translate(0); filter: none; }
 }
 
-.glitch-hover:hover { animation: jitter .25s steps(2) infinite; text-shadow: -3px 0 var(--clay), 3px 0 var(--moss); }
+.glitch-hover:hover { animation: jitter .25s steps(2) infinite; text-shadow: -3px 0 var(--terracotta), 3px 0 var(--turquoise); }
 @keyframes jitter {
   0% { transform: translate(0); }
   50% { transform: translate(-2px, 1px); }

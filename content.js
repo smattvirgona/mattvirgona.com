@@ -9,7 +9,7 @@ const SITE = {
 
   // The game link. Put the game's URL here, e.g. "https://…" or "game/".
   game: {
-    label: "play",
+    label: "beyond the buffel",
     url: "https://game.mattvirgona.com",
   },
 };

@@ -139,6 +139,34 @@ h1 {
   100% { transform: translate(2px, -1px); }
 }
 
+/* ---------- buffel grass (drawn by grass.js) ---------- */
+.grass { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+main { position: relative; z-index: 2; }
+.strata { z-index: 3; }
+
+/* ---------- calm pauses: glitch rests, then comes back ---------- */
+body.calm .glitch::before, body.calm .glitch::after { visibility: hidden; animation-play-state: paused; }
+body.calm .grain { opacity: .05; }
+
+/* ---------- glitch-out when heading to the game ---------- */
+body.leaving .glitch::before { animation-duration: .35s; }
+body.leaving .glitch::after  { animation-duration: .3s; }
+body.leaving .scanlines { opacity: .5; }
+body.leaving main { animation: tear 1.8s steps(12) forwards; }
+@keyframes tear {
+  0%   { transform: none; filter: none; opacity: 1; }
+  20%  { transform: translateX(-12px) skewX(4deg); filter: hue-rotate(60deg); }
+  40%  { transform: translateX(18px) skewX(-6deg); clip-path: inset(10% 0 30% 0); }
+  60%  { transform: translateX(-24px) scaleY(1.1); filter: hue-rotate(-90deg) contrast(1.8); clip-path: inset(40% 0 20% 0); }
+  80%  { transform: translateX(8px) scaleY(.4); opacity: .6; clip-path: inset(48% 0 48% 0); }
+  100% { transform: scaleY(.02); opacity: 0; clip-path: inset(49.5% 0 49.5% 0); }
+}
+body::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 60;
+  background: var(--night); opacity: 0; transition: opacity .6s 1.2s;
+}
+body.leaving::after { opacity: 1; }
+
 /* ---------- respect reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

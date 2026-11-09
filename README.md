@@ -9,7 +9,7 @@ Static portfolio site — plain HTML/CSS/JS, no build step.
 | Name and game link | `content.js` |
 | Colors and fonts | top of `style.css` (`:root`) |
 | Layout / sections | `index.html` |
-| Glitch timing, pauses & transition | `GLITCH` at the top of `script.js`, and the `glitch` rules in `style.css` |
+| Glitch (mouse / key sensitivity) & transition | `GLITCH` at the top of `script.js`, and the `glitch` rules in `style.css` |
 | Buffel grass | `GRASS` at the top of `grass.js` |
 
 

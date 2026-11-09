@@ -1,11 +1,13 @@
-// Buffel grass — tussocks that grow up from the ground, sway, and glitch.
+// Buffel grass — hidden until the game button is pressed, then it bursts up
+// from the ground and over the screen on the way into the game.
 // Tweak the numbers in GRASS to change the look.
 
 const GRASS = {
   spacing: 46,        // px between tussocks (smaller = denser)
   blades: [14, 26],   // blades per tussock (min, max)
   height: 0.3,        // tallest blade as a fraction of screen height
-  growSeconds: 7,     // how long a tussock takes to grow
+  growSeconds: 1.2,   // how long a tussock takes to grow once the button is pressed
+  reach: 0.85,        // how far up the screen the grass climbs
   groundOffset: 38,   // px above the bottom (sits on the earth layers)
   colors: ["#d9a066", "#e8c995", "#b8a26a", "#8f9a6a", "#8b5a3c"], // straw, sand, dry olive, sage, dune
   seedColors: ["#9c7aa0", "#c94f9b", "#b59a8a"], // purple-grey bottlebrush seed heads
@@ -48,19 +50,18 @@ const GRASS = {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     tussocks = [];
     for (let x = rand(0, GRASS.spacing); x < W + 20; x += GRASS.spacing * rand(0.6, 1.4)) {
-      tussocks.push(makeTussock(x, rand(0, 3.5)));
+      tussocks.push(makeTussock(x, rand(0, 0.4)));
     }
   }
 
-  const start = performance.now();
-  let surge = 1;          // scales blade height; grows when leaving for the game
-  let surgeTarget = 1;
+  let start = null;       // set when the game button is pressed; no grass before that
+  const surge = GRASS.reach / GRASS.height;
 
   function draw(now) {
+    ctx.clearRect(0, 0, W, H);
+    if (start === null) return; // nothing to draw until the button is pressed
     const t = (now - start) / 1000;
     const ground = H - GRASS.groundOffset;
-    surge += (surgeTarget - surge) * 0.04;
-    ctx.clearRect(0, 0, W, H);
 
     for (const tu of tussocks) {
       const g = reduceMotion ? 1 : Math.min(1, Math.max(0, (t - tu.delay) / GRASS.growSeconds));
@@ -120,6 +121,10 @@ const GRASS = {
   window.addEventListener("resize", layout);
   requestAnimationFrame(draw);
 
-  // called by script.js when heading to the game
-  window.grassSurge = () => { surgeTarget = 1 / GRASS.height; };
+  // called by script.js when the game button is pressed
+  window.grassSurge = () => {
+    if (start !== null) return;
+    start = performance.now();
+    requestAnimationFrame(draw);
+  };
 })();

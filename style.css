@@ -144,9 +144,12 @@ h1 {
 main { position: relative; z-index: 2; }
 .strata { z-index: 3; }
 
-/* ---------- calm pauses: glitch rests, then comes back ---------- */
+/* ---------- calm: the glitch rests until the mouse or keys stir it ---------- */
 body.calm .glitch::before, body.calm .glitch::after { visibility: hidden; animation-play-state: paused; }
 body.calm .grain { opacity: .05; }
+/* while you're moving, the glitch copies cycle fast so they answer straight away */
+body:not(.calm) .glitch::before { animation-duration: .55s; }
+body:not(.calm) .glitch::after  { animation-duration: .45s; }
 
 /* ---------- glitch-out when heading to the game ---------- */
 body.leaving .glitch::before { animation-duration: .35s; }

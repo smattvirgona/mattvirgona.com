@@ -15,16 +15,21 @@
   <div class="scanlines" aria-hidden="true"></div>
 
   <main>
-    <h1 class="glitch" id="name" data-text="Matt Virgona">Matt Virgona</h1>
-    <a class="play glitch-hover" id="play" href="#"><span>&#9656;</span> <span id="play-label">beyond the buffel</span></a>
+    <h1 id="name">Matt Virgona</h1>
+    <a class="play" id="play" href="#"><span>&#9656;</span> <span id="play-label">beyond the buffel</span></a>
   </main>
 
   <div class="strata" aria-hidden="true">
     <span></span><span></span><span></span><span></span><span></span>
   </div>
 
+  <div id="cursor" aria-hidden="true">
+    <svg class="ghost red" viewBox="0 0 20 24"><path d="M1 1 L1 19 L6 14.5 L9.5 22 L12.5 20.7 L9 13.3 L15.5 13.3 Z" fill="currentColor"/></svg>
+    <svg class="ghost teal" viewBox="0 0 20 24"><path d="M1 1 L1 19 L6 14.5 L9.5 22 L12.5 20.7 L9 13.3 L15.5 13.3 Z" fill="currentColor"/></svg>
+    <svg class="main" viewBox="0 0 20 24"><path d="M1 1 L1 19 L6 14.5 L9.5 22 L12.5 20.7 L9 13.3 L15.5 13.3 Z" fill="currentColor" stroke="#1c1410" stroke-width="1.2" stroke-linejoin="round"/></svg>
+  </div>
+
   <script src="content.js"></script>
-  <script src="grass.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

@@ -1,72 +1,52 @@
-// Fills in content.js and runs the glitch effects.
+// Fills in content.js and draws the glitching cursor.
 // You usually only need to edit content.js.
 
 const $ = (id) => document.getElementById(id);
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const finePointer = window.matchMedia("(pointer: fine)").matches;
 
-// Glitch: it rests until you move the mouse, touch the screen or press a key.
-// Harder movement means more glitch; it settles again soon after you stop.
-const GLITCH = {
-  mouse: 1 / 350,    // glitch energy per pixel of mouse movement
-  key: 0.45,         // glitch energy per key press
-  decay: 0.86,       // energy kept every tenth of a second (lower = settles faster)
-  wake: 0.08,        // energy above which the glitch shows
-  ambient: [14, 28], // seconds between the rare bursts that happen on their own
-  transition: 1.8,   // length of the glitch-out when heading to the game
+// The cursor's glitch: red and teal copies slip off the arrow while the mouse moves.
+const CURSOR = {
+  maxShift: 3,     // px the copies slip at most (keep it subtle)
+  perPixel: 0.15,  // px of slip per px the mouse moved since the last frame
+  settleMs: 120,   // how soon after the mouse stops the copies settle back
 };
 
 document.title = SITE.name;
 $("name").textContent = SITE.name;
-$("name").dataset.text = SITE.name;
 $("play").href = SITE.game.url;
 $("play-label").textContent = SITE.game.label;
 
-const between = ([a, b]) => (a + Math.random() * (b - a)) * 1000;
+// Only on a mouse or trackpad, and not when the visitor asks for less motion:
+// everyone else keeps their normal cursor.
+if (finePointer && !reduceMotion) {
+  const cursor = $("cursor");
+  document.documentElement.classList.add("custom-cursor");
+  let lastX = null, lastY = null, settle = 0;
+  const slice = () => {
+    const a = Math.floor(Math.random() * 60);
+    return `inset(${a}% 0 ${Math.max(0, 70 - a)}% 0)`;
+  };
 
-if (!reduceMotion) {
-  const body = document.body;
-  const name = $("name");
-
-  // glitch energy, fed by the mouse, touch and keys, draining over time
-  let energy = 0;
-  const feed = (amount) => { energy = Math.min(1.5, energy + amount); };
-  let lastX = null, lastY = null;
   window.addEventListener("pointermove", (e) => {
-    if (lastX !== null) feed(Math.hypot(e.clientX - lastX, e.clientY - lastY) * GLITCH.mouse);
+    if (e.pointerType !== "mouse") return;
+    cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+    cursor.classList.add("on");
+    if (lastX !== null) {
+      const dx = e.clientX - lastX, dy = e.clientY - lastY;
+      const clamp = (v) => Math.max(-CURSOR.maxShift, Math.min(CURSOR.maxShift, v * CURSOR.perPixel));
+      if (dx || dy) {
+        cursor.style.setProperty("--gx", `${clamp(dx) || 1}px`);
+        cursor.style.setProperty("--gy", `${clamp(dy)}px`);
+        cursor.style.setProperty("--clip-a", slice());
+        cursor.style.setProperty("--clip-b", slice());
+        cursor.classList.add("moving");
+        clearTimeout(settle);
+        settle = setTimeout(() => cursor.classList.remove("moving"), CURSOR.settleMs);
+      }
+    }
     lastX = e.clientX; lastY = e.clientY;
   });
-  window.addEventListener("pointerdown", () => feed(0.3));
-  window.addEventListener("keydown", () => feed(GLITCH.key));
-
-  const burst = () => {
-    name.classList.remove("burst");
-    void name.offsetWidth; // restart animation
-    name.classList.add("burst");
-  };
-  body.classList.add("calm");
-  setInterval(() => {
-    if (body.classList.contains("leaving")) return;
-    body.classList.toggle("calm", energy < GLITCH.wake);
-    if (Math.random() < energy * 0.3) burst();
-    energy *= GLITCH.decay;
-  }, 100);
-
-  // the odd burst on its own, so the page never looks frozen
-  const ambient = () => { burst(); setTimeout(ambient, between(GLITCH.ambient)); };
-  setTimeout(ambient, between(GLITCH.ambient));
-  name.addEventListener("mouseenter", burst);
-
-  // glitch-out transition into the game
-  $("play").addEventListener("click", (e) => {
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; // let new-tab clicks through
-    e.preventDefault();
-    body.classList.remove("calm");
-    body.classList.add("leaving");
-    window.grassSurge?.();
-    const rapid = setInterval(burst, 140);
-    setTimeout(() => { clearInterval(rapid); location.href = SITE.game.url; }, GLITCH.transition * 1000);
-  });
-
-  // coming back with the browser's back button: reset
-  window.addEventListener("pageshow", (e) => { if (e.persisted) location.reload(); });
+  // hide it when the mouse leaves the window, so it doesn't sit stuck at the edge
+  document.addEventListener("mouseleave", () => cursor.classList.remove("on"));
 }
